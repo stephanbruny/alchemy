@@ -37,8 +37,39 @@ namespace Alchemy {
                 this->sprite->OnDraw(context);
             }
 
+            virtual void OnContact(Entity* e) {}
+            virtual void OnContactReleased(Entity* e) {}
+
+            virtual void OnCollisionEnter() {}
+            virtual void OnCollisionRelease() {}
+
             ~Entity () {
                 delete this->sprite;
+            }
+    };
+
+    class EntityContactListener : public b2ContactListener {
+        void BeginContact(b2Contact* contact) {
+            Entity* bodyUserDataA = reinterpret_cast<Entity*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+            Entity* bodyUserDataB = reinterpret_cast<Entity*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+            if ( bodyUserDataA && bodyUserDataB ) {
+                bodyUserDataA->OnContact(bodyUserDataB);
+                bodyUserDataB->OnContact(bodyUserDataA);
+            } else {
+                if (bodyUserDataA) bodyUserDataA->OnCollisionEnter();
+                if (bodyUserDataB) bodyUserDataB->OnCollisionEnter();
+            }
+        }
+    
+        void EndContact(b2Contact* contact) {
+            Entity* bodyUserDataA = reinterpret_cast<Entity*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+            Entity* bodyUserDataB = reinterpret_cast<Entity*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+            if ( bodyUserDataA && bodyUserDataB ) {
+                bodyUserDataA->OnContactReleased(bodyUserDataB);
+                bodyUserDataB->OnContactReleased(bodyUserDataA);
+            } else {
+                if (bodyUserDataA) bodyUserDataA->OnCollisionRelease();
+                if (bodyUserDataB) bodyUserDataB->OnCollisionRelease();
             }
     };
 }

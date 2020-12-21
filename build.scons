@@ -5,6 +5,7 @@ env=Environment(
     # INCLUDE_FLAGS="-I/usr/local/Cellar/raylib/2.5.0/include/'",
     # LIB_FLAGS='-lraylib -L/usr/local/Cellar/raylib/2.5.0/lib/'
     )
+
 env.Program(
     source = 'main.cpp', 
     target = "alchemy", 
