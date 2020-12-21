@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "../lib/box2d/include/box2d/box2d.h"
 #include <SFML/Graphics.hpp>
 #include "message-bus.hpp"
@@ -44,6 +45,7 @@ namespace Alchemy {
             virtual void OnCollisionRelease() {}
 
             ~Entity () {
+                this->messageBus->publish("entity", "removed", any(this));
                 delete this->sprite;
             }
     };
@@ -71,5 +73,13 @@ namespace Alchemy {
                 if (bodyUserDataA) bodyUserDataA->OnCollisionRelease();
                 if (bodyUserDataB) bodyUserDataB->OnCollisionRelease();
             }
+        }
     };
-}
+
+    class EntityActor : public Actor {
+        private:
+            vector<Entity*> entities;
+        public:
+            EntityActor (MessageBus* bus) : Actor(bus) {}
+    };
+};

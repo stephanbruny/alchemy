@@ -51,11 +51,15 @@ namespace Alchemy {
                         (*iter)->receive(message, value);
                     }
                 } else {
-                    // TODO: Warn unknown channel
+                    // TODO: Warn unknown channel / no receivers
                 }
             };
 
             void subscribe(string channel, IActor* receiver) {
+                auto receivers = this->channels.find(channel);
+                if (receivers == this->channels.end()) {
+                    this->addChannel(channel);
+                }
                 this->channels[channel].push_back(receiver);
             };
 
@@ -73,7 +77,7 @@ namespace Alchemy {
     };
 
     class Actor : public IActor {
-        private: 
+        protected: 
             MessageBus* messageBus;
         public:
             Actor (MessageBus* bus) : IActor() {
